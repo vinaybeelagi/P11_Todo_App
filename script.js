@@ -52,4 +52,68 @@ const addOrUpdateTask = () => {
   };
   
   
+  const deleteTask = (buttonEl) => {
+    const dataArrIndex = taskData.findIndex(
+      (item) => item.id === buttonEl.parentElement.id
+    );
   
+    buttonEl.parentElement.remove();
+    taskData.splice(dataArrIndex, 1);
+    localStorage.setItem("data", JSON.stringify(taskData));
+  }
+  
+  const editTask = (buttonEl) => {
+      const dataArrIndex = taskData.findIndex(
+      (item) => item.id === buttonEl.parentElement.id
+    );
+  
+    currentTask = taskData[dataArrIndex];
+  
+    titleInput.value = currentTask.title;
+    dateInput.value = currentTask.date;
+    descriptionInput.value = currentTask.description;
+  
+    addOrUpdateTaskBtn.innerText = "Update Task";
+  
+    taskForm.classList.toggle("hidden");  
+  }
+  
+  const reset = () => {
+    titleInput.value = "";
+    dateInput.value = "";
+    descriptionInput.value = "";
+    taskForm.classList.toggle("hidden");
+    currentTask = {};
+  }
+  
+  if (taskData.length) {
+      updateTaskContainer();
+    }
+  
+  openTaskFormBtn.addEventListener("click", () =>
+    taskForm.classList.toggle("hidden")
+  );
+  
+  closeTaskFormBtn.addEventListener("click", () => {
+    const formInputsContainValues = titleInput.value || dateInput.value || descriptionInput.value;
+    const formInputValuesUpdated = titleInput.value !== currentTask.title || dateInput.value !== currentTask.date || descriptionInput.value !== currentTask.description;
+  
+    if (formInputsContainValues && formInputValuesUpdated) {
+      confirmCloseDialog.showModal();
+    } else {
+      reset();
+    }
+  });
+  
+  cancelBtn.addEventListener("click", () => confirmCloseDialog.close());
+  
+  discardBtn.addEventListener("click", () => {
+    confirmCloseDialog.close();
+    reset()
+  });
+  
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+  
+    addOrUpdateTask();
+  });
